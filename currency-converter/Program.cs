@@ -13,6 +13,15 @@ namespace currency_converter
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddDbContext<ConverterContext>(dbContextOptions => dbContextOptions.UseSqlite(
+                builder.Configuration["ConnectionStrings:DB"]), ServiceLifetime.Singleton);
+
+            #region Services
+            builder.Services.AddSingleton<UserService>();
+            builder.Services.AddSingleton<SubscriptionService>();
+            builder.Services.AddSingleton<CurrencyService>();
+            #endregion
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
