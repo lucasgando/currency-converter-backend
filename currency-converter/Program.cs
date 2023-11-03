@@ -1,3 +1,10 @@
+using currency_converter.Data;
+using currency_converter.Services.Implementations;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
+
 namespace currency_converter
 {
     public class Program
@@ -22,6 +29,19 @@ namespace currency_converter
             builder.Services.AddSingleton<CurrencyService>();
             #endregion
 
+            builder.Services.AddAuthentication("Bearer")
+                .AddJwtBearer(options =>
+                    options.TokenValidationParameters = new()
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Authentication:Issuer"],
+                        ValidAudience = builder.Configuration["Authentication:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Authentication:SecretForKey"]))
+                    }
+                );
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -33,8 +53,9 @@ namespace currency_converter
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseAuthentication();
 
+            app.UseAuthorization();
 
             app.MapControllers();
 
