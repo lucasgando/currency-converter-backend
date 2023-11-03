@@ -9,8 +9,8 @@ namespace currency_converter.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Name { get; set; }
-        public bool HasConverterLimit { get; set; }
         public int ConverterLimit { get; set; }
         public int UsdPrice { get; set; }
+        public User[] Users { get; set; }
     }
 }
