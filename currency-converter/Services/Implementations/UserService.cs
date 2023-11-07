@@ -49,7 +49,7 @@ namespace currency_converter.Services.Implementations
         }
         public bool Authenticate(string email, string password)
         {
-            UserDto? user = GetByEmail(email);
+            UserDto? user = GetByEmail(email.ToLower());
             if (user == null) return false;
             return user.PasswordHash == PasswordHasher.GetHash(password);
         }
