@@ -1,6 +1,6 @@
 ﻿using currency_converter.Data.Models.Enums;
 
-namespace currency_converter.Data.Models.Dto
+namespace currency_converter.Data.Models.Dto.User
 {
     public class UserDto
     {

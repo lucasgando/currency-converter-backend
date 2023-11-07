@@ -1,4 +1,5 @@
 ﻿using currency_converter.Data.Models.Dto;
+using currency_converter.Data.Models.Dto.User;
 using currency_converter.Services.Implementations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -47,7 +48,7 @@ namespace currency_converter.Controllers
 
             string tokenToReturn = new JwtSecurityTokenHandler() // stringify token
                 .WriteToken(jwtSecurityToken);
-
+            Console.Write(tokenToReturn);
             return Ok(tokenToReturn);
         }
     }
