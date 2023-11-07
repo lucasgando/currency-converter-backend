@@ -5,7 +5,7 @@ namespace currency_converter.Helpers
 {
     public static class PasswordHasher
     {
-        public static string GetPasswordHash(string password)
+        public static string GetHash(string password)
         {
             StringBuilder hashedPassword = new StringBuilder();
             byte[] byteHash = SHA256.HashData(Encoding.UTF8.GetBytes(password));
