@@ -59,7 +59,7 @@ namespace currency_converter.Controllers
                         Success = false,
                         Error = new Error()
                         {
-                            Code = ErrorEnum.InvalidPassword,
+                            Code = ErrorEnum.EmailTaken,
                             Message = "The provided email is already in use."
                         }
                     });

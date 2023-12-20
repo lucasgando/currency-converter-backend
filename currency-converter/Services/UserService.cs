@@ -62,7 +62,7 @@ namespace currency_converter.Services
                 Email = dto.Email.ToLower(),
                 PasswordHash = PasswordHasher.GetHash(dto.Password),
                 Role = admin ? RoleEnum.Admin : RoleEnum.User,
-                SubscriptionId = 1,
+                SubscriptionId = dto.SubscriptionId,
                 FavoriteCurrencies = new List<Currency>(),
                 ConversionHistory = new List<Conversion>(),
                 ConverterUses = 0

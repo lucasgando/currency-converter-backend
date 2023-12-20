@@ -14,6 +14,7 @@ namespace currency_converter.Controllers
         private readonly SubscriptionService _service;
         public SubscriptionController(SubscriptionService service) { _service = service; }
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult GetAll() 
         {
             return Ok(_service.GetAll());
