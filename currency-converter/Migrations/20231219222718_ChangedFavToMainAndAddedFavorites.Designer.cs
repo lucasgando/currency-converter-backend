@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using currency_converter.Data;
 
@@ -10,27 +11,14 @@ using currency_converter.Data;
 namespace currency_converter.Migrations
 {
     [DbContext(typeof(ConverterContext))]
-    partial class ConverterContextModelSnapshot : ModelSnapshot
+    [Migration("20231219222718_ChangedFavToMainAndAddedFavorites")]
+    partial class ChangedFavToMainAndAddedFavorites
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.13");
-
-            modelBuilder.Entity("CurrencyUser", b =>
-                {
-                    b.Property<int>("FavoriteCurrenciesId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("FavoriteCurrenciesId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CurrencyUser");
-                });
 
             modelBuilder.Entity("currency_converter.Data.Entities.Conversion", b =>
                 {
@@ -94,7 +82,12 @@ namespace currency_converter.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Currencies");
                 });
@@ -163,6 +156,9 @@ namespace currency_converter.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("MainCurrencyId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -178,6 +174,8 @@ namespace currency_converter.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MainCurrencyId");
 
                     b.HasIndex("SubscriptionId");
 
@@ -204,21 +202,6 @@ namespace currency_converter.Migrations
                             SubscriptionId = 1,
                             Username = "user1"
                         });
-                });
-
-            modelBuilder.Entity("CurrencyUser", b =>
-                {
-                    b.HasOne("currency_converter.Data.Entities.Currency", null)
-                        .WithMany()
-                        .HasForeignKey("FavoriteCurrenciesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("currency_converter.Data.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("currency_converter.Data.Entities.Conversion", b =>
@@ -248,13 +231,26 @@ namespace currency_converter.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("currency_converter.Data.Entities.Currency", b =>
+                {
+                    b.HasOne("currency_converter.Data.Entities.User", null)
+                        .WithMany("FavoriteCurrencies")
+                        .HasForeignKey("UserId");
+                });
+
             modelBuilder.Entity("currency_converter.Data.Entities.User", b =>
                 {
+                    b.HasOne("currency_converter.Data.Entities.Currency", "MainCurrency")
+                        .WithMany()
+                        .HasForeignKey("MainCurrencyId");
+
                     b.HasOne("currency_converter.Data.Entities.Subscription", "Subscription")
                         .WithMany("Users")
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("MainCurrency");
 
                     b.Navigation("Subscription");
                 });
@@ -267,6 +263,8 @@ namespace currency_converter.Migrations
             modelBuilder.Entity("currency_converter.Data.Entities.User", b =>
                 {
                     b.Navigation("ConversionHistory");
+
+                    b.Navigation("FavoriteCurrencies");
                 });
 #pragma warning restore 612, 618
         }

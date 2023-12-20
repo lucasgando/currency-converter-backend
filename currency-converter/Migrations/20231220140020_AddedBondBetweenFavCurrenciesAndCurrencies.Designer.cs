@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using currency_converter.Data;
 
@@ -10,9 +11,11 @@ using currency_converter.Data;
 namespace currency_converter.Migrations
 {
     [DbContext(typeof(ConverterContext))]
-    partial class ConverterContextModelSnapshot : ModelSnapshot
+    [Migration("20231220140020_AddedBondBetweenFavCurrenciesAndCurrencies")]
+    partial class AddedBondBetweenFavCurrenciesAndCurrencies
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.13");
@@ -163,6 +166,9 @@ namespace currency_converter.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("MainCurrencyId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -178,6 +184,8 @@ namespace currency_converter.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MainCurrencyId");
 
                     b.HasIndex("SubscriptionId");
 
@@ -250,11 +258,17 @@ namespace currency_converter.Migrations
 
             modelBuilder.Entity("currency_converter.Data.Entities.User", b =>
                 {
+                    b.HasOne("currency_converter.Data.Entities.Currency", "MainCurrency")
+                        .WithMany()
+                        .HasForeignKey("MainCurrencyId");
+
                     b.HasOne("currency_converter.Data.Entities.Subscription", "Subscription")
                         .WithMany("Users")
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("MainCurrency");
 
                     b.Navigation("Subscription");
                 });

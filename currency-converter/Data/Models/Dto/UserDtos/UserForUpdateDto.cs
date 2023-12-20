@@ -1,4 +1,4 @@
-﻿namespace currency_converter.Data.Models.Dto.User
+﻿namespace currency_converter.Data.Models.Dto.UserDtos
 {
     public class UserForUpdateDto
     {

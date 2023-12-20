@@ -10,6 +10,11 @@ namespace currency_converter.Data.Entities
         public int Id { get; set; }
         public string Name { get; set; }
         public string Symbol { get; set; }
-        public float ConversionIndex {  get; set; }
+        public float ConversionIndex { get; set; }
+        public string Flag { get; set; }
+        /*
+         possible attributes:
+            - flag: flag of the currency's country
+         */
     }
 }

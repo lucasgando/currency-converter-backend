@@ -11,14 +11,55 @@ using currency_converter.Data;
 namespace currency_converter.Migrations
 {
     [DbContext(typeof(ConverterContext))]
-    [Migration("20231103230558_FirstMigration")]
-    partial class FirstMigration
+    [Migration("20231212205617_AddedFlagAttributeToCurrency")]
+    partial class AddedFlagAttributeToCurrency
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.13");
+
+            modelBuilder.Entity("currency_converter.Data.Entities.Conversion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<float>("Amount")
+                        .HasColumnType("REAL");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("FromCurrencyId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<float>("FromCurrencyIndex")
+                        .HasColumnType("REAL");
+
+                    b.Property<float>("Result")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("ToCurrencyId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<float>("ToCurrencyIndex")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromCurrencyId");
+
+                    b.HasIndex("ToCurrencyId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Conversions");
+                });
 
             modelBuilder.Entity("currency_converter.Data.Entities.Currency", b =>
                 {
@@ -29,6 +70,10 @@ namespace currency_converter.Migrations
                     b.Property<float>("ConversionIndex")
                         .HasColumnType("REAL");
 
+                    b.Property<string>("Flag")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -37,12 +82,7 @@ namespace currency_converter.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Currencies");
                 });
@@ -60,8 +100,8 @@ namespace currency_converter.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UsdPrice")
-                        .HasColumnType("INTEGER");
+                    b.Property<float>("UsdPrice")
+                        .HasColumnType("REAL");
 
                     b.HasKey("Id");
 
@@ -73,14 +113,14 @@ namespace currency_converter.Migrations
                             Id = 1,
                             ConverterLimit = 10,
                             Name = "free",
-                            UsdPrice = 0
+                            UsdPrice = 0f
                         },
                         new
                         {
                             Id = 2,
                             ConverterLimit = -1,
                             Name = "premium",
-                            UsdPrice = 10
+                            UsdPrice = 10f
                         });
                 });
 
@@ -90,9 +130,15 @@ namespace currency_converter.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("ConverterUses")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int?>("FavoriteCurrencyId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -110,6 +156,8 @@ namespace currency_converter.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FavoriteCurrencyId");
+
                     b.HasIndex("SubscriptionId");
 
                     b.ToTable("Users");
@@ -118,15 +166,17 @@ namespace currency_converter.Migrations
                         new
                         {
                             Id = 1,
+                            ConverterUses = 0,
                             Email = "admin@mail.com",
                             PasswordHash = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
-                            Role = 0,
+                            Role = 1,
                             SubscriptionId = 2,
                             Username = "Admin"
                         },
                         new
                         {
                             Id = 2,
+                            ConverterUses = 0,
                             Email = "user@mail.com",
                             PasswordHash = "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
                             Role = 0,
@@ -135,20 +185,46 @@ namespace currency_converter.Migrations
                         });
                 });
 
-            modelBuilder.Entity("currency_converter.Data.Entities.Currency", b =>
+            modelBuilder.Entity("currency_converter.Data.Entities.Conversion", b =>
                 {
-                    b.HasOne("currency_converter.Data.Entities.User", null)
-                        .WithMany("FavoriteCurrencies")
-                        .HasForeignKey("UserId");
+                    b.HasOne("currency_converter.Data.Entities.Currency", "FromCurrency")
+                        .WithMany()
+                        .HasForeignKey("FromCurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("currency_converter.Data.Entities.Currency", "ToCurrency")
+                        .WithMany()
+                        .HasForeignKey("ToCurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("currency_converter.Data.Entities.User", "User")
+                        .WithMany("ConversionHistory")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FromCurrency");
+
+                    b.Navigation("ToCurrency");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("currency_converter.Data.Entities.User", b =>
                 {
+                    b.HasOne("currency_converter.Data.Entities.Currency", "FavoriteCurrency")
+                        .WithMany()
+                        .HasForeignKey("FavoriteCurrencyId");
+
                     b.HasOne("currency_converter.Data.Entities.Subscription", "Subscription")
                         .WithMany("Users")
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("FavoriteCurrency");
 
                     b.Navigation("Subscription");
                 });
@@ -160,7 +236,7 @@ namespace currency_converter.Migrations
 
             modelBuilder.Entity("currency_converter.Data.Entities.User", b =>
                 {
-                    b.Navigation("FavoriteCurrencies");
+                    b.Navigation("ConversionHistory");
                 });
 #pragma warning restore 612, 618
         }

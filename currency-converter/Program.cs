@@ -1,5 +1,5 @@
 using currency_converter.Data;
-using currency_converter.Services.Implementations;
+using currency_converter.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -41,13 +41,27 @@ namespace currency_converter
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<ConverterContext>(dbContextOptions => dbContextOptions.UseSqlite(
-                builder.Configuration["ConnectionStrings:DB"]), ServiceLifetime.Singleton);
+                builder.Configuration["ConnectionStrings:Db"]), ServiceLifetime.Scoped);
 
             #region Services
-            builder.Services.AddSingleton<UserService>();
-            builder.Services.AddSingleton<SubscriptionService>();
-            builder.Services.AddSingleton<CurrencyService>();
+            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<SubscriptionService>();
+            builder.Services.AddScoped<CurrencyService>();
+            builder.Services.AddScoped<ConverterService>();
+            builder.Services.AddScoped<UpdateExchangeService>();
             #endregion
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    name: "AllowOrigin",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                                .AllowAnyMethod()
+                                .AllowAnyHeader();
+                    });
+            });
 
             builder.Services.AddAuthentication("Bearer")
                 .AddJwtBearer(options =>
@@ -72,6 +86,8 @@ namespace currency_converter
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors("AllowOrigin");
 
             app.UseAuthentication();
 

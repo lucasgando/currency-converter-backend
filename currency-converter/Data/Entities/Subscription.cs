@@ -10,7 +10,8 @@ namespace currency_converter.Data.Entities
         public int Id { get; set; }
         public string Name { get; set; }
         public int ConverterLimit { get; set; }
-        public int UsdPrice { get; set; }
-        public User[] Users { get; set; }
+        public float UsdPrice { get; set; }
+        public string SubscriptionPicture { get; set; }
+        public List<User> Users { get; set; }
     }
 }

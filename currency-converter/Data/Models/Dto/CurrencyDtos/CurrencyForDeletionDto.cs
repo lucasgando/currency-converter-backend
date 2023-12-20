@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace currency_converter.Data.Models.Dto.Currency
+namespace currency_converter.Data.Models.Dto.CurrencyDtos
 {
     public class CurrencyForDeletionDto
     {

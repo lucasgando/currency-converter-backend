@@ -1,7 +1,6 @@
-﻿using currency_converter.Data.Models.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace currency_converter.Data.Models.Dto.User
+namespace currency_converter.Data.Models.Dto.UserDtos
 {
     public class UserForCreationDto
     {
@@ -12,7 +11,5 @@ namespace currency_converter.Data.Models.Dto.User
         public string Email { get; set; }
         [Required]
         public string Password { get; set; }
-        [Required]
-        public RoleEnum Role { get; set; } = RoleEnum.User;
     }
 }
